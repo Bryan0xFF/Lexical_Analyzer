@@ -1,0 +1,10 @@
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\bin\Debug\Lexical_Analyzer.exe.config
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\bin\Debug\Lexical_Analyzer.exe
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\bin\Debug\Lexical_Analyzer.pdb
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.csprojAssemblyReference.cache
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.Properties.Resources.resources
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.csproj.GenerateResource.cache
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.csproj.CoreCompileInputs.cache
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.exe
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.pdb
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Lexical_Analyzer\obj\Debug\Lexical_Analyzer.Form1.resources

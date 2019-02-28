@@ -1,0 +1,12 @@
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\bin\Debug\Expression.dll
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\bin\Debug\Expression.pdb
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\obj\Debug\Expression.csprojAssemblyReference.cache
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\obj\Debug\Expression.csproj.CoreCompileInputs.cache
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\obj\Debug\Expression.dll
+C:\Users\Bryan\source\repos\Lexical_Analyzer\Expression\Expression\obj\Debug\Expression.pdb
+C:\Users\Bryan\source\repos\Expression\Expression\bin\Debug\Expression.dll
+C:\Users\Bryan\source\repos\Expression\Expression\bin\Debug\Expression.pdb
+C:\Users\Bryan\source\repos\Expression\Expression\obj\Debug\Expression.csprojAssemblyReference.cache
+C:\Users\Bryan\source\repos\Expression\Expression\obj\Debug\Expression.csproj.CoreCompileInputs.cache
+C:\Users\Bryan\source\repos\Expression\Expression\obj\Debug\Expression.dll
+C:\Users\Bryan\source\repos\Expression\Expression\obj\Debug\Expression.pdb

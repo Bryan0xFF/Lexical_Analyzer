@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexical_Analyzer", "Lexical_Analyzer.csproj", "{DAA18747-EE19-4DAC-9444-DE70BBF9C25D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAA18747-EE19-4DAC-9444-DE70BBF9C25D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA18747-EE19-4DAC-9444-DE70BBF9C25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA18747-EE19-4DAC-9444-DE70BBF9C25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA18747-EE19-4DAC-9444-DE70BBF9C25D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F69C61E2-5E8A-4A77-B535-8355368A3647}
+	EndGlobalSection
+EndGlobal
