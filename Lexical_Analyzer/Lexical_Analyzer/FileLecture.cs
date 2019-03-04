@@ -37,7 +37,7 @@ namespace Lexical_Analyzer
                     default_value = validate[0];
 
                     
-                    while (default_value == "SETS" && !streamReader.EndOfStream)
+                    while (!streamReader.EndOfStream)
                     {
 
                         if (default_value == "SETS" && linea == 1)
@@ -49,6 +49,11 @@ namespace Lexical_Analyzer
                         if (!streamReader.EndOfStream)
                         {
                             readline = streamReader.ReadLine();
+                        }
+
+                        if (readline == "\t" && !streamReader.EndOfStream)
+                        {
+                            continue;
                         }
 
                         validate = readline.Trim().Split();
@@ -104,6 +109,13 @@ namespace Lexical_Analyzer
                                                 dato_actual = datos[1].Substring(i + 2, 1);
                                             }
 
+                                            if (i + 2 > datos[1].Length)
+                                            {// quiere decir que es el ultimo char enclosure
+                                                ingreso_valido = false;
+                                                count_separadores = 0;
+                                                continue;
+                                            }
+
                                             //esto quiere decir que el dato intermedio es un caracter de escape '
                                             if (dato_actual == "'")
                                             {
@@ -120,6 +132,45 @@ namespace Lexical_Analyzer
                                                     //ingresar el dato ' al diccionario
                                                     alfabeto.Add(dato_actual);
                                                 }   
+                                            }
+
+                                            if (dato_actual == ".")
+                                            {//se verifica que el caracter anterior sea un punto tambien
+                                                dato_actual = datos[1].Substring(i + 1, 1);
+
+                                                if (dato_actual == ".")
+                                                {//es un intervalo
+                                                    //se obtiene el ultimo elemento para sacar su char value
+                                                    string interval_init = alfabeto.ElementAt(alfabeto.Count - 1);
+                                                    string interval_final = "";
+
+                                                    if (i + 4 < datos[1].Length)
+                                                    {
+                                                        //se obtiene el intervalo final
+                                                        dato_actual = datos[1].Substring(i + 4, 1);
+                                                        interval_final = dato_actual;
+                                                    }
+                                                    else
+                                                    {
+                                                        throw new Exception();
+                                                    }
+
+                                                    char init_val = Convert.ToChar(interval_init);
+                                                    int init = init_val + 1;
+
+                                                    for (int j = init; j < 256; j++)
+                                                    {
+                                                        string actual = Convert.ToString((char)j);
+
+                                                        if (actual == interval_final)
+                                                        {//se llego al intervalo y termina el ciclo
+                                                            i = i + 4;
+                                                            break;
+                                                        }
+
+                                                        alfabeto.Add(actual); 
+                                                    }
+                                                }
                                             }
                                             else
                                             {
@@ -148,6 +199,12 @@ namespace Lexical_Analyzer
                                         
                                     }
 
+                                }
+
+                                if (default_value == "TOKENS")
+                                {
+                                    //verificar si los tokens son validos y agregarlo a una RegEx con un separador |
+                                    //luego concatenar el .# y operar en el arbol
                                 }
                                 break;
                         }
