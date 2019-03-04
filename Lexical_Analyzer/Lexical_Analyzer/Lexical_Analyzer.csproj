@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="ExpressionNode.cs" />
     <Compile Include="ExpressionTree.cs" />
+    <Compile Include="FileLecture.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
