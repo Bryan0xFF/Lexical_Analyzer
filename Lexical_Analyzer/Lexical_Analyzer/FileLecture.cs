@@ -104,6 +104,7 @@ namespace Lexical_Analyzer
                                         {
                                             //se verifica la siguiente posicion para ver si no contiene algun caracter
                                             //especial que haya que tomar como parte del alfabeto
+
                                             if (i + 2 < datos[1].Length)
                                             {
                                                 dato_actual = datos[1].Substring(i + 2, 1);
@@ -183,8 +184,17 @@ namespace Lexical_Analyzer
 
                                         if (ingreso_valido == true && dato_actual != "'") 
                                         {//tiene permitido ingresar al diccionario
+                                            string datoIngresar = dato_actual;
+
+                                            while (i + 1 < datos[1].Length || dato_actual != "'")
+                                            {
+                                                dato_actual = datos[1].Substring(i + 1, 1);
+                                                datoIngresar += dato_actual;
+                                                i++;
+                                            }
+
                                             alfabeto.Add(dato_actual);
-                                            continue;
+                                        
                                         }
 
                                         
