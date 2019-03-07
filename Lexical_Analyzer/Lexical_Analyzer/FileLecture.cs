@@ -56,6 +56,11 @@ namespace Lexical_Analyzer
                             continue;
                         }
 
+                        if (readline == "" && !streamReader.EndOfStream)
+                        {
+                            continue;
+                        }
+
                         validate = readline.Trim().Split();
 
                         switch (validate[0])
@@ -90,11 +95,80 @@ namespace Lexical_Analyzer
                                         }
                                         columna++;
 
+                                        if (ingreso_valido == false && dato_actual == "C")
+                                        {//puede que posiblemente sea CHR
+                                            
+                                            while ( i < datos[1].Length && datos[1].Substring(i + 1, 1) != "(")
+                                            {
+                                                string set = "CHR";
+                                                string integer_init = "";
+
+                                                dato_actual += datos[1].Substring(i + 1, 1);
+
+                                                if (set.Contains(dato_actual))
+                                                {
+                                                    if (dato_actual == "CHR")
+                                                    {
+                                                        if ( i + 2 < datos[1].Length)
+                                                        {
+                                                            //se busca el numero contenido dentro del CHR
+                                                            integer_init += datos[1].Substring(i + 2, 1);
+                                                            i = i + 2;
+
+                                                            while (i + 1 < datos[1].Length && datos[1].Substring(i + 1,1) != ")")
+                                                            {
+                                                                integer_init += datos[1].Substring(i + 1, 1);
+                                                            }
+
+                                                            //se trata de parsear el dato, si da error entonces 
+                                                            //hay inconsistencia de datos
+
+                                                            try
+                                                            {
+                                                                integer_init += datos[1].Substring(i + 2, 1);
+
+                                                                
+                                                            }
+                                                            catch (Exception)
+                                                            {
+                                                                //hay error en datos almacenados
+                                                                throw;
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            if (datoIngresar.Length > 3)
+                                            {
+                                                if (datoIngresar.Contains("CHR"))
+                                                {
+                                                    //se toma el numero dentro del CHR
+                                                    dato_actual = datos[1].Substring(i + 1, 1);
+                                                    string integer_init = dato_actual;
+
+                                                    //se valida si no hay algun numero
+                                                    while (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) != ")")
+                                                    {
+                                                        dato_actual = datos[1].Substring(i + 1, 1);
+                                                        integer_init += dato_actual;
+                                                        i++;
+                                                    }
+                                                    //se convierte a entero para ver el intervalo inicial
+
+
+                                                }
+                                            }
+                                        }
                                         
                                         if (ingreso_valido == false && dato_actual != "'" && dato_actual != "+")
                                         {
                                             //hay un error en el archivo
-                                            string pos_err = "Errorlectura archivo. linea: " + linea.ToString() +
+                                            string pos_err = "Error en lectura archivo. linea: " + linea.ToString() +
                                                 ", columna: " + columna.ToString();
                                             throw new Exception(pos_err);
                                         }
@@ -186,14 +260,16 @@ namespace Lexical_Analyzer
                                         {//tiene permitido ingresar al diccionario
                                             string datoIngresar = dato_actual;
 
-                                            while (i + 1 < datos[1].Length || dato_actual != "'")
+                                            while (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) != "'")
                                             {
                                                 dato_actual = datos[1].Substring(i + 1, 1);
                                                 datoIngresar += dato_actual;
                                                 i++;
                                             }
 
-                                            alfabeto.Add(dato_actual);
+                                           
+
+                                            alfabeto.Add(datoIngresar);
                                         
                                         }
 
