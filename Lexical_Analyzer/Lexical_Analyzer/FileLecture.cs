@@ -102,6 +102,7 @@ namespace Lexical_Analyzer
                                             {
                                                 string set = "CHR";
                                                 string integer_init = "";
+                                                string integer_final = "";
 
                                                 dato_actual += datos[1].Substring(i + 1, 1);
 
@@ -111,6 +112,7 @@ namespace Lexical_Analyzer
                                                     {
                                                         if ( i + 2 < datos[1].Length)
                                                         {
+                                                            i++;
                                                             //se busca el numero contenido dentro del CHR
                                                             integer_init += datos[1].Substring(i + 2, 1);
                                                             i = i + 2;
@@ -118,6 +120,7 @@ namespace Lexical_Analyzer
                                                             while (i + 1 < datos[1].Length && datos[1].Substring(i + 1,1) != ")")
                                                             {
                                                                 integer_init += datos[1].Substring(i + 1, 1);
+                                                                i++;
                                                             }
 
                                                             //se trata de parsear el dato, si da error entonces 
@@ -125,17 +128,72 @@ namespace Lexical_Analyzer
 
                                                             try
                                                             {
-                                                                integer_init += datos[1].Substring(i + 2, 1);
+                                                                //integer_init += datos[1].Substring(i + 2, 1);
 
-                                                                
+                                                                if ( i + 2 < datos[1].Length)
+                                                                {
+                                                                    if (datos[1].Substring(i + 2, 1) == ".")
+                                                                    {//se verifica si el siguiente es un punto y si el i + 2 es diferente de .
+                                                                        if (datos[1].Substring( i + 3, 1) == ".")
+                                                                        {//posiblemente es un intervalo
+                                                                            i = i + 3;
+                                                                            dato_actual = "";
+                                                                            while (i + 1 < datos[1].Length)
+                                                                            {
+                                                                                dato_actual += datos[1].Substring(i + 1, 1);
+
+                                                                                if (set.Contains(dato_actual))
+                                                                                {
+                                                                                    if (dato_actual == "CHR")
+                                                                                    {
+                                                                                        i = i + 2;
+
+                                                                                        while (datos[1].Substring(i, 1) != ")" && i < datos[1].Length)
+                                                                                        {
+                                                                                            integer_final += datos[1].Substring(i, 1);
+                                                                                            i++;
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        i++;
+                                                                                    }
+                                                                                }
+
+                                                                                else
+                                                                                {
+                                                                                    throw new Exception();
+                                                                                }
+
+
+                                                                            }
+                                                                        }
+                                                                    }
+
+
+                                                                }
+
+                                                                int a = Convert.ToInt32(integer_init);
+                                                                int b = Convert.ToInt32(integer_final);
+
+                                                                for (int j = a; j < b; j++)
+                                                                {
+                                                                    alfabeto.Add(Convert.ToChar(j).ToString());
+                                                                }
+
+                                                                break;
                                                             }
                                                             catch (Exception)
                                                             {
                                                                 //hay error en datos almacenados
-                                                                throw;
+                                                                throw new Exception("Error en el parse de CHR");
                                                             }
 
                                                         }
+                                                    }
+                                                    else
+                                                    {
+                                                        i++;
                                                     }
                                                 }
                                                 else
@@ -143,9 +201,9 @@ namespace Lexical_Analyzer
                                                     break;
                                                 }
                                             }
-                                            if (datoIngresar.Length > 3)
+                                            if (dato_actual.Length > 3)
                                             {
-                                                if (datoIngresar.Contains("CHR"))
+                                                if (dato_actual.Contains("CHR"))
                                                 {
                                                     //se toma el numero dentro del CHR
                                                     dato_actual = datos[1].Substring(i + 1, 1);
