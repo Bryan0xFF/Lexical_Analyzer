@@ -18,6 +18,7 @@ namespace Lexical_Analyzer
 
             StreamReader streamReader = new StreamReader(path);
             Dictionary<string, List<string>> alfabetos = new Dictionary<string, List<string>>();
+            Dictionary<string, string> tokens = new Dictionary<string, string>();
             int linea = 0;
             int columna = 0;
 
@@ -82,6 +83,7 @@ namespace Lexical_Analyzer
 
                                     //datos[1] contiene la expresion de alfabeto
                                     List<string> alfabeto = new List<string>();
+                                    
                                     int count_separadores = 0;
 
                                     for (int i = 0; i < datos[1].Length; i++)
@@ -91,6 +93,13 @@ namespace Lexical_Analyzer
                                         //validar espacios
                                         if (dato_actual == " " && ingreso_valido == false)
                                         {
+                                            columna++;
+                                            continue;
+                                        }
+
+                                        if (dato_actual == "\t" && ingreso_valido == false)
+                                        {
+                                            columna++;
                                             continue;
                                         }
                                         columna++;
@@ -138,6 +147,7 @@ namespace Lexical_Analyzer
                                                                         {//posiblemente es un intervalo
                                                                             i = i + 3;
                                                                             dato_actual = "";
+
                                                                             while (i + 1 < datos[1].Length)
                                                                             {
                                                                                 dato_actual += datos[1].Substring(i + 1, 1);
@@ -146,7 +156,7 @@ namespace Lexical_Analyzer
                                                                                 {
                                                                                     if (dato_actual == "CHR")
                                                                                     {
-                                                                                        i = i + 2;
+                                                                                        i = i + 3;
 
                                                                                         while (datos[1].Substring(i, 1) != ")" && i < datos[1].Length)
                                                                                         {
@@ -168,6 +178,84 @@ namespace Lexical_Analyzer
 
                                                                             }
                                                                         }
+                                                                        
+                                                                    }
+                                                                    else if (datos[1].Substring(i + 2, 1) == "C")
+                                                                    {//posible concatenacion de CHR's
+
+                                                                        //se incrementa en uno para librarse del ")"
+                                                                        i++;
+                                                                        dato_actual = "";
+                                                                        string dato_convertir = "";
+
+                                                                        while (i + 1 < datos[1].Length)
+                                                                        {
+                                                                            dato_actual += datos[1].Substring(i + 1, 1);
+                                                                            i++;
+
+                                                                            if ("CHR".Contains(dato_actual))
+                                                                            {
+                                                                                if (dato_actual == "CHR")
+                                                                                {
+                                                                                    if (i + 2 < datos[1].Length)
+                                                                                    {
+                                                                                        dato_convertir += datos[1].Substring(i + 2, 1);
+                                                                                        i = i + 2;
+
+                                                                                        //se procede a tomar la parte numerica del CHR,
+                                                                                        //caso termine por un ), entonces convertira el numero a 
+                                                                                        //char y lo agregara al diccionario
+                                                                                        while (i + 1 < datos[1].Length && datos[1].Substring
+                                                                                            (i + 1, 1) != ")")
+                                                                                        {
+                                                                                            dato_convertir += datos[1].Substring(i + 1, 1);
+                                                                                            i++;
+                                                                                        }
+
+                                                                                        //se agrega al alfabeto
+                                                                                        int num = int.Parse(dato_convertir);
+                                                                                        alfabeto.Add(Convert.ToChar(num).ToString());
+                                                                                        dato_convertir = "";
+
+                                                                                        dato_actual = "";
+                                                                                        if (i + 1 < datos[1].Length)
+                                                                                        {
+                                                                                            i = i + 1;
+
+                                                                                            if (integer_init != "")
+                                                                                            {
+                                                                                                num = int.Parse(integer_init);
+                                                                                                alfabeto.Add(Convert.ToChar(num).ToString());
+                                                                                                integer_init = "";
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            //verificar si el ultimo char es un ")"
+                                                                                            if (i + 1 < datos[1].Length)
+                                                                                            {
+                                                                                                dato_actual = datos[1].Substring(i + 1, 1);
+
+                                                                                                if (dato_actual != ")")
+                                                                                                {
+                                                                                                    throw new Exception("Error al parsear CHR");
+                                                                                                }
+                                                                                            }
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        throw new Exception();
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                throw new Exception("Error en lectura CHR");
+                                                                            }
+                                                                        }
+                                                                        break;
                                                                     }
 
 
@@ -176,7 +264,7 @@ namespace Lexical_Analyzer
                                                                 int a = Convert.ToInt32(integer_init);
                                                                 int b = Convert.ToInt32(integer_final);
 
-                                                                for (int j = a; j < b; j++)
+                                                                for (int j = a; j <= b; j++)
                                                                 {
                                                                     alfabeto.Add(Convert.ToChar(j).ToString());
                                                                 }
@@ -201,36 +289,16 @@ namespace Lexical_Analyzer
                                                     break;
                                                 }
                                             }
-                                            if (dato_actual.Length > 3)
-                                            {
-                                                if (dato_actual.Contains("CHR"))
-                                                {
-                                                    //se toma el numero dentro del CHR
-                                                    dato_actual = datos[1].Substring(i + 1, 1);
-                                                    string integer_init = dato_actual;
-
-                                                    //se valida si no hay algun numero
-                                                    while (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) != ")")
-                                                    {
-                                                        dato_actual = datos[1].Substring(i + 1, 1);
-                                                        integer_init += dato_actual;
-                                                        i++;
-                                                    }
-                                                    //se convierte a entero para ver el intervalo inicial
-
-
-                                                }
-                                            }
+                                            continue;
                                         }
                                         
-                                        if (ingreso_valido == false && dato_actual != "'" && dato_actual != "+")
+                                        if (ingreso_valido == false && dato_actual != "'" && dato_actual != "+" && dato_actual != "\t")
                                         {
                                             //hay un error en el archivo
                                             string pos_err = "Error en lectura archivo. linea: " + linea.ToString() +
                                                 ", columna: " + columna.ToString();
                                             throw new Exception(pos_err);
                                         }
-                                        
 
                                         if (dato_actual == "'" && count_separadores == 1)
                                         {
@@ -343,12 +411,79 @@ namespace Lexical_Analyzer
                                         
                                     }
 
+                                    //se asigna al alfabeto
+                                    alfabetos.Add(datos[0].Trim(), alfabeto);
+
                                 }
 
                                 if (default_value == "TOKENS")
                                 {
                                     //verificar si los tokens son validos y agregarlo a una RegEx con un separador |
                                     //luego concatenar el .# y operar en el arbol
+                                    string[] datos = readline.Split('=');
+                                    string dato_actual = "";
+                                    ingreso_valido = false;
+                                    string RegEx = "";
+                                    linea++;
+
+                                    for (int i = 0; i < datos[1].Length; i++)
+                                    {
+                                        dato_actual = datos[1].Substring(i, 1);
+
+                                        if (dato_actual == "'" && ingreso_valido == false)
+                                        {
+                                            ingreso_valido = true;
+                                            continue;
+                                        }
+
+                                        if (dato_actual == "'" && ingreso_valido == true)
+                                        {
+                                            if (datos[1].Substring(i + 1, 1) == "'")
+                                            {
+                                                //se toma el dato actual como parte de algun alfabeto y se agrega al alfabeto
+                                                RegEx += dato_actual + ".";
+                                                i++;
+                                                ingreso_valido = false;
+                                                continue;
+                                            }
+                                        }
+
+                                        if (dato_actual != "'" && ingreso_valido == false)
+                                        {//posible ingreso de alfabeto completo
+
+                                            //aqui los espacios son los que denotan fin de chunk de texto
+                                            while (datos[1].Substring(i + 1, 1) != " " && datos[1].Substring(i + 1, 1) != "\t" 
+                                                && i + 1 < datos[1].Length) 
+                                            {
+                                                dato_actual += datos[1].Substring(i + 1, 1);
+                                                i++;
+                                            }
+
+                                            if (alfabetos.ContainsKey(dato_actual))
+                                            {
+                                                if (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) == "|")
+                                                {
+                                                    RegEx += dato_actual + "|";
+                                                    i++;
+                                                }
+                                                else
+                                                {
+                                                    RegEx += dato_actual + ".";
+                                                }
+                                                
+                                            }
+
+                                        }
+
+                                        while (datos[1].Substring(i + 1, 1) != " " || datos[1].Substring(i + 1, 1) != "\t")
+                                        {
+                                            dato_actual += datos[1].Substring(i + 1, 1);
+                                            i++;
+                                        }
+
+                                        //validamos si es palabra clave de algun alfabeto o bien, si es un palabra particular
+
+                                    }
                                 }
                                 break;
                         }
