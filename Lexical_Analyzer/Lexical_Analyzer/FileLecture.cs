@@ -21,6 +21,8 @@ namespace Lexical_Analyzer
             Dictionary<string, string> tokens = new Dictionary<string, string>();
             int linea = 0;
             int columna = 0;
+            string finalRegEx = "";
+            string RegEx = "";
 
             while (!streamReader.EndOfStream)
             {
@@ -37,7 +39,7 @@ namespace Lexical_Analyzer
 
                     default_value = validate[0];
 
-                    
+
                     while (!streamReader.EndOfStream)
                     {
 
@@ -83,7 +85,7 @@ namespace Lexical_Analyzer
 
                                     //datos[1] contiene la expresion de alfabeto
                                     List<string> alfabeto = new List<string>();
-                                    
+
                                     int count_separadores = 0;
 
                                     for (int i = 0; i < datos[1].Length; i++)
@@ -106,8 +108,8 @@ namespace Lexical_Analyzer
 
                                         if (ingreso_valido == false && dato_actual == "C")
                                         {//puede que posiblemente sea CHR
-                                            
-                                            while ( i < datos[1].Length && datos[1].Substring(i + 1, 1) != "(")
+
+                                            while (i < datos[1].Length && datos[1].Substring(i + 1, 1) != "(")
                                             {
                                                 string set = "CHR";
                                                 string integer_init = "";
@@ -119,14 +121,14 @@ namespace Lexical_Analyzer
                                                 {
                                                     if (dato_actual == "CHR")
                                                     {
-                                                        if ( i + 2 < datos[1].Length)
+                                                        if (i + 2 < datos[1].Length)
                                                         {
                                                             i++;
                                                             //se busca el numero contenido dentro del CHR
                                                             integer_init += datos[1].Substring(i + 2, 1);
                                                             i = i + 2;
 
-                                                            while (i + 1 < datos[1].Length && datos[1].Substring(i + 1,1) != ")")
+                                                            while (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) != ")")
                                                             {
                                                                 integer_init += datos[1].Substring(i + 1, 1);
                                                                 i++;
@@ -139,11 +141,11 @@ namespace Lexical_Analyzer
                                                             {
                                                                 //integer_init += datos[1].Substring(i + 2, 1);
 
-                                                                if ( i + 2 < datos[1].Length)
+                                                                if (i + 2 < datos[1].Length)
                                                                 {
                                                                     if (datos[1].Substring(i + 2, 1) == ".")
                                                                     {//se verifica si el siguiente es un punto y si el i + 2 es diferente de .
-                                                                        if (datos[1].Substring( i + 3, 1) == ".")
+                                                                        if (datos[1].Substring(i + 3, 1) == ".")
                                                                         {//posiblemente es un intervalo
                                                                             i = i + 3;
                                                                             dato_actual = "";
@@ -178,7 +180,7 @@ namespace Lexical_Analyzer
 
                                                                             }
                                                                         }
-                                                                        
+
                                                                     }
                                                                     else if (datos[1].Substring(i + 2, 1) == "C")
                                                                     {//posible concatenacion de CHR's
@@ -291,7 +293,7 @@ namespace Lexical_Analyzer
                                             }
                                             continue;
                                         }
-                                        
+
                                         if (ingreso_valido == false && dato_actual != "'" && dato_actual != "+" && dato_actual != "\t")
                                         {
                                             //hay un error en el archivo
@@ -332,7 +334,7 @@ namespace Lexical_Analyzer
                                                 {
                                                     //ingresar el dato ' al diccionario
                                                     alfabeto.Add(dato_actual);
-                                                }   
+                                                }
                                             }
 
                                             if (dato_actual == ".")
@@ -369,7 +371,7 @@ namespace Lexical_Analyzer
                                                             break;
                                                         }
 
-                                                        alfabeto.Add(actual); 
+                                                        alfabeto.Add(actual);
                                                     }
                                                 }
                                             }
@@ -382,7 +384,7 @@ namespace Lexical_Analyzer
 
                                         }
 
-                                        if (ingreso_valido == true && dato_actual != "'") 
+                                        if (ingreso_valido == true && dato_actual != "'")
                                         {//tiene permitido ingresar al diccionario
                                             string datoIngresar = dato_actual;
 
@@ -393,13 +395,13 @@ namespace Lexical_Analyzer
                                                 i++;
                                             }
 
-                                           
+
 
                                             alfabeto.Add(datoIngresar);
-                                        
+
                                         }
 
-                                        
+
                                         if (dato_actual == "'" && count_separadores == 0)
                                         {
                                             //se lleva un contador de separadores de char y se cambia el
@@ -408,7 +410,7 @@ namespace Lexical_Analyzer
                                             ingreso_valido = true;
                                         }
 
-                                        
+
                                     }
 
                                     //se asigna al alfabeto
@@ -423,7 +425,7 @@ namespace Lexical_Analyzer
                                     string[] datos = readline.Split('=');
                                     string dato_actual = "";
                                     ingreso_valido = false;
-                                    string RegEx = "";
+                                    bool exists = false;
                                     linea++;
 
                                     for (int i = 0; i < datos[1].Length; i++)
@@ -436,24 +438,140 @@ namespace Lexical_Analyzer
                                             continue;
                                         }
 
+                                        if (dato_actual == "(" || dato_actual == ")")
+                                        {
+                                            continue;
+                                        }
+
                                         if (dato_actual == "'" && ingreso_valido == true)
                                         {
                                             if (datos[1].Substring(i + 1, 1) == "'")
                                             {
-                                                //se toma el dato actual como parte de algun alfabeto y se agrega al alfabeto
-                                                RegEx += dato_actual + ".";
-                                                i++;
-                                                ingreso_valido = false;
-                                                continue;
+                                                for (int j = 0; j < alfabetos.Count; j++)
+                                                {
+                                                    List<string> alfabeto_temp = alfabetos.ElementAt(j).Value;
+
+                                                    if (alfabeto_temp.Contains(dato_actual))
+                                                    {
+                                                        exists = true;
+                                                    }
+                                                }
+
+                                                if (exists)
+                                                {
+                                                    //se toma el dato actual como parte de algun alfabeto y se agrega a la RegEx
+                                                    RegEx += dato_actual + ".";
+                                                    i++;
+                                                    ingreso_valido = false;
+                                                    continue;
+                                                }
+                                                else
+                                                {
+                                                    throw new Exception("Error en token No : ");
+                                                }
                                             }
+
+                                            if (dato_actual == "\"" && ingreso_valido == true)
+                                            {
+                                                if (datos[1].Substring(i + 1, 1) == "'")
+                                                {//el " es un dato a validar dentro del alfabeto
+
+                                                    for (int j = 0; j < alfabetos.Count; j++)
+                                                    {
+                                                        List<string> alfabeto_temp = alfabetos.ElementAt(j).Value;
+
+                                                        if (alfabeto_temp.Contains(dato_actual))
+                                                        {
+                                                            exists = true;
+                                                        }
+                                                    }
+
+                                                    if (exists)
+                                                    {
+                                                        if (datos[1].Substring(i + 1, 1) == "|")
+                                                        {
+                                                            RegEx += dato_actual + "|";
+                                                            i++;
+                                                            ingreso_valido = false;
+                                                            continue;
+                                                        }
+                                                        else
+                                                        {
+                                                            RegEx += dato_actual + ".";
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        throw new Exception("Error en Token No : ");
+                                                    }
+                                                }
+                                            }
+
+                                            while (datos[1].Substring(i + 1, 1) != "'" && datos[1].Length > i + 1)
+                                            {
+                                                dato_actual += datos[1].Substring(i + 1, 1);
+                                            }
+
+                                            //validamos si existe en un diccionario
+
+                                            for (int j = 0; j < alfabetos.Count; j++)
+                                            {
+                                                List<string> alfabeto_temp = alfabetos.ElementAt(j).Value;
+
+                                                if (alfabeto_temp.Contains(dato_actual))
+                                                {
+                                                    exists = true;
+                                                }
+                                            }
+
+                                            if (exists)
+                                            {
+                                                if (datos[1].Substring(i + 1, 1) == "|")
+                                                {
+                                                    RegEx += dato_actual + "|";
+                                                }
+                                                //}
+                                            }
+
+
+
                                         }
 
-                                        if (dato_actual != "'" && ingreso_valido == false)
+                                        if (dato_actual == " " || dato_actual == "\t")
+                                        {
+                                            continue;
+                                        }
+
+                                        if ((dato_actual == "|" || dato_actual == "*" || dato_actual == "?"
+                                            || dato_actual == "+") && ingreso_valido == false)
+                                        {//ingreso de nullables especiales a la RegEx
+
+                                            if (i + 1 < datos[1].Length)
+                                            {
+                                                if (datos[1].Substring(i + 1, 1) == "|")
+                                                {
+                                                    RegEx += dato_actual + "|";
+                                                    i++;
+                                                    continue;
+                                                }
+                                                else
+                                                {
+                                                    RegEx += dato_actual + ".";
+                                                }
+                                            }
+                                            else
+                                            {//falta agregarle el numeral del final
+                                                RegEx += dato_actual + ".";
+                                            }
+                                            
+                                        }
+
+                                        if (dato_actual != "'" && dato_actual != "\"" && ingreso_valido == false)
                                         {//posible ingreso de alfabeto completo
 
                                             //aqui los espacios son los que denotan fin de chunk de texto
-                                            while (datos[1].Substring(i + 1, 1) != " " && datos[1].Substring(i + 1, 1) != "\t" 
-                                                && i + 1 < datos[1].Length) 
+                                            while (datos[1].Substring(i + 1, 1) != " " && datos[1].Substring(i + 1, 1) != "\t"
+                                                && i + 1 < datos[1].Length)
                                             {
                                                 dato_actual += datos[1].Substring(i + 1, 1);
                                                 i++;
@@ -461,6 +579,8 @@ namespace Lexical_Analyzer
 
                                             if (alfabetos.ContainsKey(dato_actual))
                                             {
+                                                i++;
+
                                                 if (i + 1 < datos[1].Length && datos[1].Substring(i + 1, 1) == "|")
                                                 {
                                                     RegEx += dato_actual + "|";
@@ -470,29 +590,22 @@ namespace Lexical_Analyzer
                                                 {
                                                     RegEx += dato_actual + ".";
                                                 }
-                                                
+
                                             }
-
+                                            else
+                                            {
+                                                throw new Exception("Error en token No : ");
+                                            }
                                         }
-
-                                        while (datos[1].Substring(i + 1, 1) != " " || datos[1].Substring(i + 1, 1) != "\t")
-                                        {
-                                            dato_actual += datos[1].Substring(i + 1, 1);
-                                            i++;
-                                        }
-
-                                        //validamos si es palabra clave de algun alfabeto o bien, si es un palabra particular
-
                                     }
                                 }
+                                finalRegEx += RegEx + "|";
                                 break;
                         }
                     }
                 }
             }
         }
-
-
         private void Eliminate_Comments(string path)
         {
             //meter al inicio del metodo de arriba para eliminar comentarios
