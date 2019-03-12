@@ -69,7 +69,9 @@ namespace Lexical_Analyzer
                                 default_value = "TOKENS";
                                 break;
 
-                            case "RESERVADAS":
+                            case "RESERVADAS()":
+                                final_RE = final_RE.Remove(final_RE.Length - 1, 1);
+                                final_RE += ".#";
                                 default_value = "RESERVADAS";
                                 break;
 
@@ -175,7 +177,9 @@ namespace Lexical_Analyzer
                                                                                         {
                                                                                             integer_final += datos[1].Substring(i, 1);
                                                                                             i++;
+                                                                                            
                                                                                         }
+                                                                                        break;
                                                                                     }
                                                                                     else
                                                                                     {
@@ -442,6 +446,7 @@ namespace Lexical_Analyzer
                                     //luego concatenar el .# y operar en el arbol
                                     string[] datos = new string[2];
                                     string nombre = "";
+                                    
                                     for (int i = 0; i < readline.Length; i++)
                                     {
                                         string separador = readline.Substring(i, 1);
@@ -461,6 +466,11 @@ namespace Lexical_Analyzer
                                     bool exists = false;
                                     linea++;
 
+                                    if (datos[1] == null)
+                                    {
+                                        continue;
+                                    }
+
                                     for (int i = 0; i < datos[1].Length; i++)
                                     {
                                         exists = false;
@@ -474,12 +484,23 @@ namespace Lexical_Analyzer
 
                                         if (dato_actual == "(" || dato_actual == ")")
                                         {
+                                            
+                                            if (dato_actual == ")")
+                                            {
+                                                RegEx = RegEx.Remove(RegEx.Length - 1, 1);
+                                                RegEx += dato_actual;
+                                            }
+                                            else
+                                            {
+                                                RegEx += dato_actual;
+                                            }
+                                            
                                             continue;
                                         }
 
                                         if (dato_actual == "'" && ingreso_valido == true)
                                         {
-                                            if (i + 1 < datos[1].Length)
+                                            if (i + 1 < datos[1].Length && datos[1].Substring(i - 1, 1) == "'")
                                             {
                                                 if (/*datos[1].Substring(i + 2, 1) == "'" &&*/ datos[1].Substring(i + 1, 1) == "'")
                                                 {
@@ -673,13 +694,17 @@ namespace Lexical_Analyzer
                                                     if (exists)
                                                     {
                                                         RegEx += dato_actual + ".";
-                                                        break;
+                                                        continue;
                                                     }
                                                     else
                                                     {
                                                         throw new Exception("Error en token No :");
                                                     }
 
+                                                }
+                                                else
+                                                {
+                                                    RegEx += dato_actual + ".";
                                                 }
 
                                             }
@@ -690,6 +715,7 @@ namespace Lexical_Analyzer
                                                     if (alfabetos.ElementAt(j).Value.Contains(dato_actual))
                                                     {
                                                         exists = true;
+                                                        break;
                                                     }
                                                 }
 
