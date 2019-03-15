@@ -9,6 +9,8 @@ namespace Lexical_Analyzer
     class ExpressionTree
     {
         static int values = 1;
+        Dictionary<int, List<int>> followPos = new Dictionary<int, List<int>>();
+
 
 
         /// <summary>
@@ -171,9 +173,9 @@ namespace Lexical_Analyzer
                                 }
                             }
                         }
-                        
+
                     }
-                    
+
                 }
 
                 if (current == ")" && operadores.Count > 0)
@@ -192,7 +194,7 @@ namespace Lexical_Analyzer
 
                         if (operadores.Peek() == ".")
                         {
-                           
+
                             ExpressionNode data = new ExpressionNode();
                             data.dato = operadores.Pop();
 
@@ -260,8 +262,8 @@ namespace Lexical_Analyzer
                                 ExpressionNode nodea = opAnteriores.Pop();
                                 ExpressionNode nodeb = datos.Pop();
 
-                                data.izquierdo = nodeb;
-                                data.derecho = nodea;
+                                data.izquierdo = nodea;
+                                data.derecho = nodeb;
 
                             }
 
@@ -282,7 +284,7 @@ namespace Lexical_Analyzer
                         }
                     }
 
-                    if (operadores.Count > 0 )
+                    if (operadores.Count > 0)
                     {
                         if (operadores.Peek() == "|")
                         {// se trae un dato de regAnterior
@@ -303,7 +305,7 @@ namespace Lexical_Analyzer
 
 
                 }
-            
+
 
                 if (current == "(")
                 {
@@ -334,11 +336,11 @@ namespace Lexical_Analyzer
                         }
                         operadores.Push(current);
                     }
-                    
+
                     continue;
                 }
 
-                
+
 
 
 
@@ -398,11 +400,11 @@ namespace Lexical_Analyzer
                         }
                     }
                 }
-                
 
-                
+
+
             }
-        
+
             return datos.Pop();
         }
 
@@ -458,8 +460,8 @@ namespace Lexical_Analyzer
                 return 6;
             if (op == "|")
                 return 6;
-         
-           
+
+
             //nothing is selected and is returned a -1 instead.
             return -1;
         }
@@ -469,6 +471,7 @@ namespace Lexical_Analyzer
             if (root.derecho == null && root.izquierdo == null)
             {
                 root.firstPos.Add(values);
+                root.lastPos.Add(values);
                 values++;
             }
             else
@@ -499,7 +502,7 @@ namespace Lexical_Analyzer
                 {
                     assignRules(root.derecho);
                 }
-               
+
 
                 if (root.dato == ".")
                 {
@@ -533,6 +536,269 @@ namespace Lexical_Analyzer
             }
 
             return root;
+        }
+
+        public ExpressionNode AssignMidRules(ExpressionNode root)
+        {
+            if (root.izquierdo != null)
+            {
+                AssignMidRules(root.izquierdo);
+            }
+
+            if (root.derecho != null)
+            {
+                AssignMidRules(root.derecho);
+            }
+
+            if (root.izquierdo == null && root.derecho == null)
+            {
+                return root;
+            }
+
+            if (root.dato == "|" && root.derecho != null && root.izquierdo != null)
+            {
+                List<int> c1 = root.izquierdo.firstPos;
+                List<int> c2 = root.derecho.firstPos;
+
+                for (int i = 0; i < c1.Count; i++)
+                {
+                    root.firstPos.Add(c1.ElementAt(i));
+                }
+
+                for (int i = 0; i < c2.Count; i++)
+                {
+                    if (!root.firstPos.Contains(c2.ElementAt(i)))
+                    {
+                        root.firstPos.Add(c2.ElementAt(i));
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                }
+
+                //tomamos ahora los laspos
+
+                c1 = root.izquierdo.lastPos;
+                c2 = root.derecho.lastPos;
+
+                for (int i = 0; i < c1.Count; i++)
+                {
+                    root.lastPos.Add(c1.ElementAt(i));
+                }
+
+                for (int i = 0; i < c2.Count; i++)
+                {
+                    if (!root.lastPos.Contains(c2.ElementAt(i)))
+                    {
+                        root.lastPos.Add(c2.ElementAt(i));
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                }
+            }
+
+            if (root.dato == "." && root.derecho != null && root.izquierdo != null)
+            {
+                //c1 es nullable
+                if (root.izquierdo.isNullable == true)
+                {
+                    List<int> c1 = root.izquierdo.firstPos;
+                    List<int> c2 = root.derecho.firstPos;
+
+                    for (int i = 0; i < c1.Count; i++)
+                    {
+                        root.firstPos.Add(c1.ElementAt(i));
+                    }
+
+                    for (int i = 0; i < c2.Count; i++)
+                    {
+                        if (!root.firstPos.Contains(c2.ElementAt(i)))
+                        {
+                            root.firstPos.Add(c2.ElementAt(i));
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                    }
+                }
+                else
+                {
+                    root.firstPos = root.izquierdo.firstPos;
+                }
+
+                if (root.derecho.isNullable == true)
+                {
+                    List<int> c1 = root.izquierdo.lastPos;
+                    List<int> c2 = root.derecho.lastPos;
+
+                    for (int i = 0; i < c1.Count; i++)
+                    {
+                        root.lastPos.Add(c1.ElementAt(i));
+                    }
+
+                    for (int i = 0; i < c2.Count; i++)
+                    {
+                        if (!root.lastPos.Contains(c2.ElementAt(i)))
+                        {
+                            root.lastPos.Add(c2.ElementAt(i));
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                    }
+                }
+                else
+                {
+                    root.lastPos = root.derecho.lastPos;
+                }
+            }
+
+            if (root.dato == "*" && root.izquierdo != null)
+            {
+                root.firstPos = root.izquierdo.firstPos;
+                root.lastPos = root.izquierdo.lastPos;
+            }
+
+            if (root.dato == "+" && root.izquierdo != null)
+            {
+                root.firstPos = root.izquierdo.firstPos;
+                root.lastPos = root.izquierdo.lastPos;
+            }
+
+            if (root.dato == "?" && root.izquierdo != null)
+            {
+                root.firstPos = root.izquierdo.firstPos;
+                root.lastPos = root.izquierdo.lastPos;
+            }
+
+            return root;
+        }
+
+
+        public Dictionary<int, List<int>> AssignFollowPos(ExpressionNode root)
+        {
+            for (int i = 1; i < values; i++)
+            {
+                List<int> followpos = new List<int>();
+                followPos.Add(i, followpos);
+            }
+
+            return followPos;
+        }
+
+        public Dictionary<int, List<int>> ComputeFPosConcat(ExpressionNode root, Dictionary<int, List<int>> followPos)
+        {
+
+
+            if (root.izquierdo == null && root.derecho == null)
+            {
+                return followPos;
+            }
+
+            if (root.izquierdo != null)
+            {
+              followPos =  ComputeFPosConcat(root.izquierdo, followPos);
+            }
+            if (root.derecho != null)
+            {
+                followPos = ComputeFPosConcat(root.derecho, followPos);
+            }
+
+            if (root.dato == ".")
+            {
+                List<int> firstc2 = root.derecho.firstPos;
+                List<int> lastc1 = root.izquierdo.lastPos;
+
+                for (int i = 0; i < lastc1.Count; i++)
+                {
+                    if (followPos[lastc1.ElementAt(i)].Count != 0)
+                    {
+                        
+                        for (int j = 0; j < firstc2.Count; j++)
+                        {
+                            //si el nodo contiene algun elemento de la lista, entonces no lo agregara
+                            if (followPos[lastc1.ElementAt(i)].Contains(firstc2.ElementAt(j)))
+                            {
+                                //followPos.ElementAt(lastc1.ElementAt(i)).Value.Contains(firstc2.ElementAt(j)
+                                continue;
+                            }
+                            else
+                            {
+                                //followPos.ElementAt(lastc1.ElementAt(i)).Value.Add();
+                                followPos[lastc1.ElementAt(i)].Add(firstc2.ElementAt(j));
+                            }
+                        }
+                    }
+                    else
+                    {//si no tiene nada, entonces agregara
+                        //followPos.ElementAt(lastc1.ElementAt(i)).Value = firstc2;
+
+                        followPos[lastc1.ElementAt(i)] = firstc2;
+                    }
+
+                }
+            }
+
+            if ((root.dato == "*" || root.dato == "+" || root.dato == "?") && root.izquierdo != null)
+            {
+                List<int> firstc1 = root.izquierdo.firstPos;
+                List<int> lastc1 = root.izquierdo.lastPos;
+
+                for (int i = 0; i < lastc1.Count; i++)
+                {
+                    if (followPos.ElementAt(lastc1.ElementAt(i)).Value.Count != 0)
+                    {
+                        for (int j = 0; j < lastc1.Count; j++)
+                        {
+                            //si el nodo contiene algun elemento de la lista, entonces no lo agregara
+                            if (followPos.ElementAt(lastc1.ElementAt(i)).Value.Contains(firstc1.ElementAt(j)))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                followPos[lastc1.ElementAt(i)].Add(firstc1.ElementAt(j));
+                            }
+                        }
+                    }
+                    else
+                    {//si no tiene nada, entonces agregara
+                        //followPos.Add(lastc1.ElementAt(i), firstc1);
+                        followPos[lastc1.ElementAt(i)] = firstc1;
+                    }
+                }
+
+            }
+            return followPos;
+        }
+
+        public Dictionary<int, string> ObtainLeafs(ExpressionNode root, Dictionary<int, string> datos)
+        {
+            if (root.izquierdo == null && root.derecho == null)
+            {
+                datos.Add(root.firstPos[0], root.dato);
+            }
+
+            if (root.izquierdo != null)
+            {
+                datos = ObtainLeafs(root.izquierdo, datos);
+            }
+
+            if (root.derecho != null)
+            {
+                datos = ObtainLeafs(root.derecho, datos);
+            }
+
+            return datos;
         }
     }
 }
