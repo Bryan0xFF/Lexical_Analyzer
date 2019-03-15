@@ -26,13 +26,16 @@ namespace Lexical_Analyzer
             ExpressionNode node = expression.PrefixToBinaryTree(expression.toPrefix(textBox1.Text));
             */
             FileLecture fileLecture = new FileLecture();
+            To_AFD AFD = new To_AFD();
             OpenFileDialog ofd = new OpenFileDialog();
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 string path = ofd.FileName;
 
-                fileLecture.ReadFile(path);
+                string regEx = fileLecture.ReadFile(path);
+                ExpressionNode root = AFD.CreateTree(regEx);
+                //introducirlo al arbol con reglas
             }
 
         }

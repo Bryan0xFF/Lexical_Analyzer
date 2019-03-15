@@ -9,13 +9,17 @@ namespace Lexical_Analyzer
 {
     class FileLecture
     {
-        public void ReadFile(string path)
+        public static Dictionary<string, List<string>> alfabetos = new Dictionary<string, List<string>>();
+
+        public string ReadFile(string path)
         {
             //TODO: Validar por que no me incluye la R del 'O''R' en el token
             //TODO: ingresar reglas ya al arbol para su construccion
             String final_RE = null;
             StreamReader streamReader = new StreamReader(path);
-            Dictionary<string, List<string>> alfabetos = new Dictionary<string, List<string>>();
+            
+            Dictionary<string, List<string>> actions = new Dictionary<string, List<string>>();
+
             Dictionary<string, string> tokens = new Dictionary<string, string>();
             int linea = 0;
             int columna = 0;
@@ -71,7 +75,7 @@ namespace Lexical_Analyzer
 
                             case "RESERVADAS()":
                                 final_RE = final_RE.Remove(final_RE.Length - 1, 1);
-                                final_RE += ".#";
+                                final_RE = final_RE  + ".#";
                                 default_value = "RESERVADAS";
                                 break;
 
@@ -488,10 +492,16 @@ namespace Lexical_Analyzer
                                             if (dato_actual == ")")
                                             {
                                                 RegEx = RegEx.Remove(RegEx.Length - 1, 1);
+                                                //se concatena para ver si hay un caracter especial fuera
                                                 RegEx += dato_actual;
                                             }
                                             else
                                             {
+                                                if (datos[1].Substring(i - 1, 1) == ".")
+                                                {
+                                                    RegEx += ".";
+                                                    continue;
+                                                }
                                                 RegEx += dato_actual;
                                             }
                                             
@@ -621,15 +631,43 @@ namespace Lexical_Analyzer
                                                 }
                                                 else
                                                 {
-                                                    RegEx += dato_actual + ".";
+                                                    if (RegEx[RegEx.Length - 1] == '.')
+                                                    {
+                                                        RegEx = RegEx.Remove(RegEx.Length - 1, 1);
+                                                    }
+                                                    RegEx += dato_actual;
                                                 }
                                             }
                                             else
                                             {//falta agregarle el numeral del final
+                                                //tiene una concat que hay que quitar
+                                                if (RegEx[RegEx.Length - 1] == '.')
+                                                {
+                                                    RegEx = RegEx.Remove(RegEx.Length - 1, 1);
+                                                }
                                                 RegEx += dato_actual;
                                             }
                                             continue;
 
+                                        }
+
+                                        if ((dato_actual == "|" || dato_actual == "*" || dato_actual == "?"
+                                            || dato_actual == "+") && ingreso_valido == true)
+                                        {// es parte de algun alfabeto
+                                            for (int k = 0; k < alfabetos.Count; k++)
+                                            {
+                                                if (alfabetos.ElementAt(k).Value.Contains(dato_actual))
+                                                {
+                                                    RegEx += dato_actual + "Æ.";
+                                                    exists = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (exists)
+                                            {
+                                                continue;
+                                            }
                                         }
 
                                         if (dato_actual != "'" && dato_actual != "\"" && ingreso_valido == false)
@@ -738,13 +776,22 @@ namespace Lexical_Analyzer
                                             RegEx = RegEx.Remove(RegEx.Length - 1, 1);
                                     }
                                     
-                                    final_RE += RegEx + "|";
+                                    final_RE += "(" + RegEx + ")" + "|";
+                                }
+
+                                if (default_value == "ACTIONS")
+                                {
+
                                 }
                                 break;
+
+                                
                         }
                     }
                 }
             }
+
+            return final_RE;
         }
         private void Eliminate_Comments(string path)
         {
