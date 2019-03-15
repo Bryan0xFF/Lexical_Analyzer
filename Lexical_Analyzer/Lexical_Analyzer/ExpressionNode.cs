@@ -15,6 +15,7 @@ namespace Lexical_Analyzer
         public string dato;
         public ExpressionNode derecho;
         public ExpressionNode izquierdo;
+        public bool isNullable;
 
         public ExpressionNode()
         {
@@ -25,6 +26,7 @@ namespace Lexical_Analyzer
             derecho = null;
             izquierdo = null;
             dato = "";
+            isNullable = false;
         }
     }
 }

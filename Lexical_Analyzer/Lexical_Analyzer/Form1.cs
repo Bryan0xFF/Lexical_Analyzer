@@ -27,6 +27,7 @@ namespace Lexical_Analyzer
             */
             FileLecture fileLecture = new FileLecture();
             To_AFD AFD = new To_AFD();
+            ExpressionTree tree = new ExpressionTree();
             OpenFileDialog ofd = new OpenFileDialog();
 
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -35,6 +36,7 @@ namespace Lexical_Analyzer
 
                 string regEx = fileLecture.ReadFile(path);
                 ExpressionNode root = AFD.CreateTree(regEx);
+                tree.assignRules(root);
                 //introducirlo al arbol con reglas
             }
 

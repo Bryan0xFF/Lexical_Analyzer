@@ -8,7 +8,7 @@ namespace Lexical_Analyzer
 {
     class ExpressionTree
     {
-
+        static int values = 1;
 
 
         /// <summary>
@@ -464,6 +464,75 @@ namespace Lexical_Analyzer
             return -1;
         }
 
-        
+        public ExpressionNode assignRules(ExpressionNode root)
+        {
+            if (root.derecho == null && root.izquierdo == null)
+            {
+                root.firstPos.Add(values);
+                values++;
+            }
+            else
+            {
+                assignRules(root.izquierdo);
+
+                if (root.dato == "*")
+                {
+                    root.isNullable = true;
+                }
+                if (root.dato == "+")
+                {
+                    if (root.izquierdo.isNullable == false)
+                    {
+                        root.isNullable = false;
+                    }
+                    else
+                    {
+                        root.isNullable = true;
+                    }
+                }
+                if (root.dato == "?")
+                {
+                    root.isNullable = true;
+                }
+
+                if (root.derecho != null)
+                {
+                    assignRules(root.derecho);
+                }
+               
+
+                if (root.dato == ".")
+                {
+                    if (root.izquierdo != null && root.derecho != null)
+                    {
+                        if (root.izquierdo.isNullable == true && root.derecho.isNullable == true)
+                        {
+                            root.isNullable = true;
+                        }
+                        else
+                        {
+                            root.isNullable = false;
+                        }
+                    }
+                }
+
+                if (root.dato == "|")
+                {
+                    if (root.izquierdo != null && root.derecho != null)
+                    {
+                        if (root.izquierdo.isNullable == true || root.derecho.isNullable == true)
+                        {
+                            root.isNullable = true;
+                        }
+                        else
+                        {
+                            root.isNullable = false;
+                        }
+                    }
+                }
+            }
+
+            return root;
+        }
     }
 }
