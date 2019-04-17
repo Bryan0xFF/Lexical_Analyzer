@@ -78,9 +78,29 @@ namespace Lexical_Analyzer
                         if (node_values.ElementAt(i) == dato)
                         {
                             //existe un dato similar
-                            if (temp_followpos.Contains(j))
+                            if (temp_followpos.Contains(j + 1))
                             {   //existe dentro del conjunto
-                                followPos_insert.Concat(followpos.ElementAt(j).Value);
+
+                                if (followPos_insert.Count == 0)
+                                {
+                                    followPos_insert.AddRange(followpos.ElementAt(j).Value);
+                                }
+                                else
+                                {
+                                    for (int l = 0; l < temp_followpos.Count; l++)
+                                    {
+                                        if (followPos_insert.Contains(temp_followpos.ElementAt(l)))
+                                        {
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            followPos_insert.Add(temp_followpos.ElementAt(l));
+                                        }
+                                    }
+                                }
+
+                                
                                 //verificamos que el conjunto no exista dentro de los estados validos
                                 
                                 if (!state.StateSet.Values.Contains(followPos_insert))
@@ -130,11 +150,11 @@ namespace Lexical_Analyzer
             {
                 if (node_values.Count == 0)
                 {
-                    node_values.Add(node_values.ElementAt(i));
+                    node_values.Add(nodos.Values.ElementAt(i));
                 }
                 if (!node_values.Contains(nodos.ElementAt(i).Value))
                 {
-                    node_values.Add(node_values.ElementAt(i));
+                    node_values.Add((nodos.Values.ElementAt(i)));
                 }
             }
 

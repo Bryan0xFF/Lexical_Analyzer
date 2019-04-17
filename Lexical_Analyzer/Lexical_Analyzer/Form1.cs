@@ -81,12 +81,13 @@ namespace Lexical_Analyzer
                     }
 
                     regEx = "";
+                    
+
+                    AFD.CreateAutomata(root, NodeData, followpos);
+
                     root = new ExpressionNode();
                     followpos = new Dictionary<int, List<int>>();
 
-                    //AFD.CreateAutomata(root, NodeData, followpos);
-
-                    
                 }
                 catch (Exception x )
                 {
