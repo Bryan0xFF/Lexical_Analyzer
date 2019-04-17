@@ -26,50 +26,119 @@ namespace Lexical_Analyzer
             
         }
 
-        public Dictionary<string, List<string>> CreateAutomata (ExpressionNode root, 
+        /// <summary>
+        /// Create the Finite Deterministic Automaton base in a tree
+        /// nodes, a list of followpos and mathematical set states
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="nodos"></param>
+        /// <param name="followpos"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> CreateAutomata (ExpressionNode root, 
             Dictionary<int, string> nodos, Dictionary<int, List<int>> followpos)
         {
-            //empieza con el estado A
-            List<int> A = root.firstPos;
-            List<int> temp = new List<int>();
-            List<List<int>> transiciones = new List<List<int>>();
-            bool salida = true;
-            //sirve para recorrer las nuevas transiciones creadas, hasta que llega a un punto de fin y hace que termine el algoritmo
-            int integer_transiciones = 0;
-            Queue<Dictionary<string, List<int>>> colaTransiciones = new Queue<Dictionary<string, List<int>>>();
+            State state = new State();
+            List<string> node_values = new List<string>();
+            bool end_followpos = false;
+            int state_num = 0;
+            int count = 0;
+            int current_state = 0;
+            state.StateSet.Add("q" + state_num.ToString(), root.firstPos);
+            state_num++;
 
-            //de mi conjunto A, a que dato puedo ir con ese conjunto
-            while (salida == true)
+            Dictionary<string, string> transicion_valor = new Dictionary<string, string>();
+
+            //se inicia obteniendo los nodos y se valuan todos los datos
+
+            node_values = ObtainNodeValues(nodos);
+            List<int> temp_followpos = state.StateSet.ElementAt(0).Value;
+            List<int> followPos_insert = new List<int>();
+
+            while (!end_followpos)
             {
-                salida = false;
-                transiciones.Add(A);
+                //no se ha terminado de analizar todos los conjuntos
+                //se inicia analizado el conjunto perteneciente a q0
+                count++;
 
-                for (int i = 1; i <= nodos.Count; i++)
-                {//se obtiene el dato actual
-                    string datoActual = nodos[i];
-                    int valueActual = i;
-
-                    //tiene el followpos del estado actual
-                    if (A.Contains(valueActual))
-                    {
-                        temp = followpos[valueActual];
-
-                        if (transiciones.Contains(temp))
-                        {
-                            //no se agre como transicion extra
-                        }
-                        else
-                        {
-                            transiciones.Add(temp);
-                        }
-                    }
+                for (int i = 0; i < node_values.Count; i++)
+                {
+                    //se toman los datos y se analizar para ver si se pueden hacer transiciones de estados
+                    //se obtiene cada nodo del followpos y se evalua si el nodo contiene el dato a evaluar del listado de nodos
+                    //si si, se crea un nuevo conjunto con el followpos o concatenacion del followpos
 
                     
+                    for (int j = 0; j < nodos.Count; j++)
+                    {
+                        //obtenemos el dato del nodo
+                        string dato = nodos.ElementAt(j).Value;
+
+                        //verificamos si es igual al dato buscado, si es asi, se verifica tambien que el dato este en el conjunto de
+                        //followpos
+
+                        if (node_values.ElementAt(i) == dato)
+                        {
+                            //existe un dato similar
+                            if (temp_followpos.Contains(j))
+                            {   //existe dentro del conjunto
+                                followPos_insert.Concat(followpos.ElementAt(j).Value);
+                                //verificamos que el conjunto no exista dentro de los estados validos
+                                
+                                if (!state.StateSet.Values.Contains(followPos_insert))
+                                {
+                                    state.StateSet.Add("q" + state_num, followPos_insert);
+                                }
+
+                                
+                            }
+
+                            string name = "q" + current_state.ToString() + " / " + node_values.ElementAt(i).ToString();
+
+                            //buscamos la transicion que corresponde al estado (o sea, obtener la llave asociada a tal followpos)
+                            for (int k = 0; k < state.StateSet.Count; k++)
+                            {
+                                if (state.StateSet.ElementAt(k).Value == followPos_insert)
+                                {
+                                    transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                }
+                            }
+
+                            if (transicion_valor.Count != 0 && transicion_valor.ContainsKey(name) == false)
+                            {   //significa que no se encontro ninguna transicion y se pone un default
+
+                                transicion_valor.Add(name, "");
+                            }
+                        
+                        }
+                    }
+                }
+
+                if (count == state.StateSet.Count)
+                {
+                    end_followpos = true;
                 }
             }
 
-            return null;
+
+            return transicion_valor;
         }
-        
+
+        private List<string> ObtainNodeValues(Dictionary<int, string> nodos)
+        {
+            List<string> node_values = new List<string>();
+
+            for (int i = 0; i < nodos.Count; i++)
+            {
+                if (node_values.Count == 0)
+                {
+                    node_values.Add(node_values.ElementAt(i));
+                }
+                if (!node_values.Contains(nodos.ElementAt(i).Value))
+                {
+                    node_values.Add(node_values.ElementAt(i));
+                }
+            }
+
+            return node_values;
+        }
     }
 }

@@ -84,7 +84,7 @@ namespace Lexical_Analyzer
                     root = new ExpressionNode();
                     followpos = new Dictionary<int, List<int>>();
 
-                    AFD.CreateAutomata(root, NodeData, followpos);
+                    //AFD.CreateAutomata(root, NodeData, followpos);
 
                     
                 }
