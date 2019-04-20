@@ -345,7 +345,7 @@ namespace Lexical_Analyzer
                                                     dato_actual = datos[1].Substring(i + 2, 1);
                                                 }
 
-                                                if (i + 2 > datos[1].Length)
+                                                if (i + 2 >= datos[1].Length)
                                                 {// quiere decir que es el ultimo char enclosure
                                                     ingreso_valido = false;
                                                     count_separadores = 0;
@@ -736,12 +736,19 @@ namespace Lexical_Analyzer
 
                                                 if (i + 1 < datos[1].Length)
                                                 {
-                                                    while (datos[1].Substring(i + 1, 1) != " " && datos[1].Substring(i + 1, 1) != "\t"
-                                                                                                       && i + 1 < datos[1].Length)
+                                                    while (i + 1 < datos[1].Length)
                                                     {
-                                                        dato_actual += datos[1].Substring(i + 1, 1);
-                                                        i++;
-                                                        columna++;
+                                                        if (datos[1].Substring(i + 1, 1) != "\t" && datos[1].Substring(i + 1, 1) != " ")
+                                                        {
+                                                            dato_actual += datos[1].Substring(i + 1, 1);
+                                                            i++;
+                                                            columna++;
+                                                        }
+                                                        else
+                                                        {
+                                                            break;
+                                                        }
+                                                        
                                                     }
                                                 }
                                                 //aqui los espacios son los que denotan fin de chunk de texto

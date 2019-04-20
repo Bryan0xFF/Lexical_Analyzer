@@ -51,13 +51,17 @@ namespace Lexical_Analyzer
             //se inicia obteniendo los nodos y se valuan todos los datos
 
             node_values = ObtainNodeValues(nodos);
-            List<int> temp_followpos = state.StateSet.ElementAt(0).Value;
+            List<int> temp_followpos = state.StateSet.ElementAt(count).Value;
             List<int> followPos_insert = new List<int>();
+            current_state = -1;
 
             while (!end_followpos)
             {
                 //no se ha terminado de analizar todos los conjuntos
                 //se inicia analizado el conjunto perteneciente a q0
+                temp_followpos = state.StateSet.ElementAt(count).Value;
+                followPos_insert = new List<int>();
+                current_state++;
                 count++;
 
                 for (int i = 0; i < node_values.Count; i++)
@@ -81,12 +85,9 @@ namespace Lexical_Analyzer
                             if (temp_followpos.Contains(j + 1))
                             {   //existe dentro del conjunto
 
-                                if (followPos_insert.Count == 0)
+                                if (true)
                                 {
-                                    followPos_insert.AddRange(followpos.ElementAt(j).Value);
-                                }
-                                else
-                                {
+
                                     for (int l = 0; l < temp_followpos.Count; l++)
                                     {
                                         if (followPos_insert.Contains(temp_followpos.ElementAt(l)))
@@ -98,41 +99,85 @@ namespace Lexical_Analyzer
                                             followPos_insert.Add(temp_followpos.ElementAt(l));
                                         }
                                     }
+
                                 }
 
-                                
+
                                 //verificamos que el conjunto no exista dentro de los estados validos
-                                
-                                if (!state.StateSet.Values.Contains(followPos_insert))
+                                bool canInsert = false;
+                                List<int> setState = new List<int>();
+
+                                if (followPos_insert.Count != 0)
                                 {
-                                    state.StateSet.Add("q" + state_num, followPos_insert);
+                                    for (int n = 0; n < followPos_insert.Count; n++)
+                                    {
+                                        //tomar los followpos de los nodos determinados anteriormente e insertarlos en tookedFollowPos
+                                        if (!setState.Contains(followPos_insert.ElementAt(n)))
+                                        {
+                                            for (int x = 0; x < followpos.Count; x++)
+                                            {
+                                                if (followPos_insert.ElementAt(n) == followpos.ElementAt(x).Key)
+                                                {
+                                                    foreach (int item in followpos.ElementAt(x).Value)
+                                                    {
+                                                        if (!setState.Contains(item))
+                                                        {
+                                                            setState.Add(item);
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }   
+                                        }
+                                    }
                                 }
 
-                                
-                            }
-
-                            string name = "q" + current_state.ToString() + " / " + node_values.ElementAt(i).ToString();
-
-                            //buscamos la transicion que corresponde al estado (o sea, obtener la llave asociada a tal followpos)
-                            for (int k = 0; k < state.StateSet.Count; k++)
-                            {
-                                if (state.StateSet.ElementAt(k).Value == followPos_insert)
+                                for (int k = 0; k < state.StateSet.Values.Count; k++)
                                 {
-                                    transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                    if (state.StateSet.ElementAt(k).Value.OrderBy(x => x).SequenceEqual(setState.OrderBy(m => m)))
+                                    {
+                                        canInsert = false;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        canInsert = true;
+                                    }
                                 }
-                            }
 
-                            if (transicion_valor.Count != 0 && transicion_valor.ContainsKey(name) == false)
-                            {   //significa que no se encontro ninguna transicion y se pone un default
+                                if (canInsert)
+                                {
+                                    state.StateSet.Add("q" + state_num, setState);
+                                    state_num++;
+                                }
 
-                                transicion_valor.Add(name, "");
+                               
+                                string name = name = "q" + current_state.ToString() + " / " + node_values.ElementAt(i).ToString();
+
+                                //buscamos la transicion que corresponde al estado (o sea, obtener la llave asociada a tal followpos)
+                                for (int k = 0; k < state.StateSet.Count; k++)
+                                {
+                                    if (state.StateSet.ElementAt(k).Value.OrderBy(x => x).SequenceEqual(setState.OrderBy(m => m)))
+                                    {
+                                        transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                    }
+                                }
+
+                                if (transicion_valor.Count != 0 && transicion_valor.ContainsKey(name) == false)
+                                {   //significa que no se encontro ninguna transicion y se pone un default
+
+                                    transicion_valor.Add(name, "");
+                                }
                             }
                         
                         }
                     }
+
                 }
 
-                if (count == state.StateSet.Count)
+                
+
+                if (current_state + 1 == state.StateSet.Count)
                 {
                     end_followpos = true;
                 }
@@ -152,7 +197,7 @@ namespace Lexical_Analyzer
                 {
                     node_values.Add(nodos.Values.ElementAt(i));
                 }
-                if (!node_values.Contains(nodos.ElementAt(i).Value))
+                if (!node_values.Contains(nodos.ElementAt(i).Value) && nodos.ElementAt(i).Value != "#")
                 {
                     node_values.Add((nodos.Values.ElementAt(i)));
                 }

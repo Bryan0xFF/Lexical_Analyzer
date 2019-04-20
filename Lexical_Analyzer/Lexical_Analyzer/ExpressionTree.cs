@@ -40,6 +40,16 @@ namespace Lexical_Analyzer
 
                 if (isOperator(current) && current != ")" && current != "(")
                 {
+                    if (i + 1 < expression.Length && i + 2 < expression.Length)
+                    { //la siguiente es una palabra
+
+                        if (current == "." && (expression.Substring(i + 1, 1) == ".") && expression.Substring(i + 2, 1) != ".")
+                        {
+                            //dato actual en i + 1 es una palabra
+                            chunk += current;
+                            continue;
+                        }
+                    }
                     if (i + 1 < expression.Length)
                     {
                         if (expression.Substring(i + 1, 1) == "Æ")
