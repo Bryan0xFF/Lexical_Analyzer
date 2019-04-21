@@ -88,15 +88,21 @@ namespace Lexical_Analyzer
                                 if (true)
                                 {
 
-                                    for (int l = 0; l < temp_followpos.Count; l++)
+                                    for (int l = 0; l < nodos.Count; l++)
                                     {
-                                        if (followPos_insert.Contains(temp_followpos.ElementAt(l)))
+                                        
+                                        if (nodos.ElementAt(l).Value == dato  && temp_followpos.Contains(l + 1))
                                         {
-                                            continue;
+                                            
+                                            if (!followPos_insert.Contains(l + 1))
+                                            {
+                                                followPos_insert.Add(nodos.ElementAt(l).Key);
+                                            }
+                                            
                                         }
                                         else
                                         {
-                                            followPos_insert.Add(temp_followpos.ElementAt(l));
+                                            continue;   
                                         }
                                     }
 
@@ -159,7 +165,14 @@ namespace Lexical_Analyzer
                                 {
                                     if (state.StateSet.ElementAt(k).Value.OrderBy(x => x).SequenceEqual(setState.OrderBy(m => m)))
                                     {
-                                        transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                        if (transicion_valor.ContainsKey(name))
+                                        {
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                        }
                                     }
                                 }
 
@@ -168,6 +181,8 @@ namespace Lexical_Analyzer
 
                                     transicion_valor.Add(name, "");
                                 }
+
+                                followPos_insert.Clear();
                             }
                         
                         }
