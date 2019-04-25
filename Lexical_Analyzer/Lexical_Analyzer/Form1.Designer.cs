@@ -31,6 +31,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.DGVFollow = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
+            this.tbxCompiler = new System.Windows.Forms.TextBox();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.btnCompilar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGVFollow)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,11 +65,43 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "FollowPos";
             // 
+            // tbxCompiler
+            // 
+            this.tbxCompiler.Location = new System.Drawing.Point(671, 32);
+            this.tbxCompiler.Multiline = true;
+            this.tbxCompiler.Name = "tbxCompiler";
+            this.tbxCompiler.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbxCompiler.Size = new System.Drawing.Size(530, 547);
+            this.tbxCompiler.TabIndex = 3;
+            // 
+            // btnExport
+            // 
+            this.btnExport.Location = new System.Drawing.Point(1253, 173);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(75, 31);
+            this.btnExport.TabIndex = 4;
+            this.btnExport.Text = "Export";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // btnCompilar
+            // 
+            this.btnCompilar.Location = new System.Drawing.Point(1253, 369);
+            this.btnCompilar.Name = "btnCompilar";
+            this.btnCompilar.Size = new System.Drawing.Size(75, 31);
+            this.btnCompilar.TabIndex = 5;
+            this.btnCompilar.Text = "compilar";
+            this.btnCompilar.UseVisualStyleBackColor = true;
+            this.btnCompilar.Click += new System.EventHandler(this.btnCompilar_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1377, 675);
+            this.Controls.Add(this.btnCompilar);
+            this.Controls.Add(this.btnExport);
+            this.Controls.Add(this.tbxCompiler);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DGVFollow);
             this.Controls.Add(this.button1);
@@ -84,6 +119,9 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.DataGridView DGVFollow;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbxCompiler;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button btnCompilar;
     }
 }
 

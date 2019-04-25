@@ -171,7 +171,14 @@ namespace Lexical_Analyzer
                                         }
                                         else
                                         {
-                                            transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                            if (state.StateSet.ElementAt(k).Value.Contains(nodos.Count))
+                                            {
+                                               transicion_valor.Add(name, "#" + state.StateSet.ElementAt(k).Key);
+                                            }
+                                            else
+                                            {
+                                                transicion_valor.Add(name, state.StateSet.ElementAt(k).Key);
+                                            }
                                         }
                                     }
                                 }
@@ -189,8 +196,6 @@ namespace Lexical_Analyzer
                     }
 
                 }
-
-                
 
                 if (current_state + 1 == state.StateSet.Count)
                 {

@@ -855,6 +855,11 @@ namespace Lexical_Analyzer
                                         final_RE += "(" + RegEx + ")" + "|";
                                     }
 
+                                    if (default_value == "RESERVADAS")
+                                    {
+                                        //dijo que no las iba a evaluar
+                                    }
+
                                     if (default_value == "ACTIONS")
                                     {
 

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Export.cs" />
     <Compile Include="ExpressionNode.cs" />
     <Compile Include="ExpressionTree.cs" />
     <Compile Include="FileLecture.cs" />

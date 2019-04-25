@@ -83,7 +83,9 @@ namespace Lexical_Analyzer
                     regEx = "";
                     
 
-                    AFD.CreateAutomata(root, NodeData, followpos);
+                    Dictionary<string, string> automata = AFD.CreateAutomata(root, NodeData, followpos);
+                    Export export = new Export(automata);
+                    tbxCompiler.Text = export.ExportCode(automata);
 
                     root = new ExpressionNode();
                     followpos = new Dictionary<int, List<int>>();
@@ -101,6 +103,21 @@ namespace Lexical_Analyzer
 
         }
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCompilar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
         {
 
         }
