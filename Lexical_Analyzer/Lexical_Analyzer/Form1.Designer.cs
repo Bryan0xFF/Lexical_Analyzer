@@ -39,11 +39,11 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 80);
+            this.button1.Location = new System.Drawing.Point(12, 194);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(75, 62);
             this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
+            this.button1.Text = "leer tokens";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -53,7 +53,7 @@
             this.DGVFollow.Location = new System.Drawing.Point(116, 80);
             this.DGVFollow.Name = "DGVFollow";
             this.DGVFollow.RowTemplate.Height = 24;
-            this.DGVFollow.Size = new System.Drawing.Size(431, 320);
+            this.DGVFollow.Size = new System.Drawing.Size(290, 320);
             this.DGVFollow.TabIndex = 1;
             // 
             // label1
@@ -61,9 +61,10 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(244, 32);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 17);
+            this.label1.Size = new System.Drawing.Size(68, 17);
             this.label1.TabIndex = 2;
-            this.label1.Text = "FollowPos";
+            this.label1.Text = "Automata";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // tbxCompiler
             // 
@@ -76,7 +77,7 @@
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(1253, 173);
+            this.btnExport.Location = new System.Drawing.Point(1257, 283);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 31);
             this.btnExport.TabIndex = 4;
@@ -86,13 +87,13 @@
             // 
             // btnCompilar
             // 
-            this.btnCompilar.Location = new System.Drawing.Point(1253, 369);
+            this.btnCompilar.Location = new System.Drawing.Point(1257, 391);
             this.btnCompilar.Name = "btnCompilar";
-            this.btnCompilar.Size = new System.Drawing.Size(75, 31);
+            this.btnCompilar.Size = new System.Drawing.Size(93, 31);
             this.btnCompilar.TabIndex = 5;
-            this.btnCompilar.Text = "compilar";
+            this.btnCompilar.Text = "Compilar";
             this.btnCompilar.UseVisualStyleBackColor = true;
-            this.btnCompilar.Click += new System.EventHandler(this.btnCompilar_Click);
+            this.btnCompilar.Click += new System.EventHandler(this.btnCompilar_Click_1);
             // 
             // Form1
             // 

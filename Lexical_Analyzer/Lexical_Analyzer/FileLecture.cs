@@ -10,7 +10,8 @@ namespace Lexical_Analyzer
     class FileLecture
     {
         public static Dictionary<string, List<string>> alfabetos = new Dictionary<string, List<string>>();
-
+        public static Dictionary<int, string> ACTIONS = new Dictionary<int, string>();
+        public static Dictionary<int, string> tokens = new Dictionary<int, string>();
 
 
         public string ReadFile(string path)
@@ -77,10 +78,10 @@ namespace Lexical_Analyzer
                                     default_value = "TOKENS";
                                     break;
 
-                                case "RESERVADAS()":
+                                case "ACTIONS":
                                     final_RE = final_RE.Remove(final_RE.Length - 1, 1);
                                     final_RE = final_RE + ".#";
-                                    default_value = "RESERVADAS";
+                                    default_value = "ACTIONS";
                                     break;
 
                                 default:
@@ -855,18 +856,91 @@ namespace Lexical_Analyzer
                                         final_RE += "(" + RegEx + ")" + "|";
                                     }
 
-                                    if (default_value == "RESERVADAS")
-                                    {
-                                        //dijo que no las iba a evaluar
-                                    }
-
                                     if (default_value == "ACTIONS")
                                     {
+                                        while (!streamReader.EndOfStream)
+                                        {
+                                            readline = streamReader.ReadLine();
+                                            
+                                            if (readline.Contains("ERROR") && readline.Contains('='))
+                                            {
+                                                string[] split = readline.Split('=');
 
+                                                if (split[0].Trim() == "ERROR")
+                                                {
+                                                    ACTIONS.Add(Convert.ToInt32(split[1].Trim()), "ERROR");
+                                                }
+                                            }
+
+                                            if (readline.Contains("{"))
+                                            {
+                                                string nombre_alfabeto = "";
+                                                string[] datos = readline.Split('(');
+                                                nombre_alfabeto = datos[0];
+
+                                                while (!streamReader.EndOfStream && !readline.Contains("}"))
+                                                {
+                                                    //public static Dictionary<int, string> ACTIONS = new Dictionary<int, string>();
+                                                    string numero = "";
+                                                    string dato = "";
+                                                    bool insert = false;
+                                                    readline = streamReader.ReadLine();
+
+                                                    for (int i = 0; i < readline.Length; i++)
+                                                    {
+                                                        if (readline.Contains("}"))
+                                                        {
+                                                            break;
+                                                        }
+
+                                                        if (readline.Substring(i, 1) == "=" || insert == true)
+                                                        {
+                                                            insert = true;
+
+                                                            if (readline.Substring(i, 1) == "\t" || readline.Substring(i, 1) == " ")
+                                                            {
+                                                                continue;
+                                                            }
+                                                            else
+                                                            {
+                                                                if (readline.Substring(i, 1) == "\'")
+                                                                {
+                                                                    i = i + 1;
+
+                                                                    while (readline.Substring(i, 1) != "\'")
+                                                                    {
+                                                                        try
+                                                                        {
+                                                                            dato += readline.Substring(i, 1);
+                                                                            i = i + 1;
+                                                                        }
+                                                                        catch (Exception)
+                                                                        {
+
+                                                                            throw new Exception("Error parsing de ACTIONS");
+                                                                        }
+                                                                        
+                                                                    }
+
+                                                                    
+                                                                    ACTIONS.Add(Convert.ToInt32(numero.Trim()), dato.Trim());
+                                                                }                                                                
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (readline.Substring(i, 1).Trim() == "\t" || readline.Substring(i, 1).Trim() == " ")
+                                                            {
+                                                                continue;
+                                                            }
+                                                            numero += readline.Substring(i, 1).Trim();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     break;
-
-
                             }
                         }
                     }

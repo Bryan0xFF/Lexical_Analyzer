@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Microsoft.CSharp;
+using System.CodeDom.Compiler;
+using System.Diagnostics;
 
 namespace Lexical_Analyzer
 {
@@ -44,48 +47,33 @@ namespace Lexical_Analyzer
                     root = tree.AssignMidRules(root);
                     followpos = tree.AssignFollowPos(root);
                     followpos = tree.ComputeFPosConcat(root, followpos);
+                    NodeData = tree.ObtainLeafs(root, NodeData);
+
+                    Dictionary<string, string> automata = AFD.CreateAutomata(root, NodeData, followpos);
+                    Export export = new Export(automata);
+                    tbxCompiler.Text = export.ExportCode(automata);
                     //introducirlo al arbol con reglas
 
                     //1ero: numero de nodo
                     //segundo: followpos
                     //tercero: dato del arbol
-                    DGVFollow.ColumnCount = 3;
+                    DGVFollow.ColumnCount = 2;
 
                     DGVFollow.RowCount = followpos.Count + 1;
 
-                    DGVFollow[0, 0].Value = "Nodo No: ";
-                    DGVFollow[1, 0].Value = "FollowPos: ";
-                    DGVFollow[2, 0].Value = "Valor: ";
+                    DGVFollow[0, 0].Value = "Transicion";
+                    DGVFollow[1, 0].Value = "Estado: ";
 
                     DGVFollow.ColumnHeadersVisible = false;
                     DGVFollow.RowHeadersVisible = false;
 
-                    for (int i = 1; i <= followpos.Count; i++)
+                    for (int i = 0; i < automata.Count; i++)
                     {
-                        DGVFollow[0, i].Value = i;
-                    }
-
-                    for (int i = 1; i <= followpos.Count; i++)
-                    {
-                        foreach (var item in followpos[i])
-                        {
-                            DGVFollow[1, i].Value += item + " ";
-                        }
-                    }
-
-                    NodeData = tree.ObtainLeafs(root, NodeData);
-
-                    for (int i = 1; i <= followpos.Count; i++)
-                    {
-                        DGVFollow[2, i].Value = NodeData[i];
+                        DGVFollow[0, i].Value = automata.ElementAt(i).Key;
+                        DGVFollow[1, i].Value = automata.ElementAt(i).Value;
                     }
 
                     regEx = "";
-                    
-
-                    Dictionary<string, string> automata = AFD.CreateAutomata(root, NodeData, followpos);
-                    Export export = new Export(automata);
-                    tbxCompiler.Text = export.ExportCode(automata);
 
                     root = new ExpressionNode();
                     followpos = new Dictionary<int, List<int>>();
@@ -119,7 +107,53 @@ namespace Lexical_Analyzer
 
         private void btnExport_Click(object sender, EventArgs e)
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
 
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                saveFileDialog.DefaultExt = ".cs";
+                StreamWriter streamWriter = new StreamWriter(saveFileDialog.FileName);
+                streamWriter.Write(tbxCompiler.Text);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+            }
+
+            
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCompilar_Click_1(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string path = openFileDialog.FileName;
+
+
+                StreamReader streamReader = new StreamReader(path);
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append(streamReader.ReadToEnd());
+
+                //target framework v 4.6.1
+                CSharpCodeProvider csc = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
+                CompilerParameters parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, "validacion.exe", true);
+                parameters.GenerateExecutable = true;
+                CompilerResults compilerResults = csc.CompileAssemblyFromSource(parameters, stringBuilder.ToString());
+                
+                if (compilerResults.Errors.Cast<CompilerError>().ToList().Count == 0)
+                {
+                    Process.Start(Application.StartupPath + "/" + "validacion.exe");
+                }
+                
+            }
+
+            
         }
     }
 }

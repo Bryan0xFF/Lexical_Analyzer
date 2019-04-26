@@ -225,14 +225,14 @@ namespace Lexical_Analyzer
                     sb.AppendLine("{");
 
                 }
-
+                sb.AppendLine("word_chunk += readline[pos].ToString();");
                 sb.AppendLine("estado = " + (i + 1).ToString() + ";");
 
                 //en retroceso, hacer un lexema-- y validar que no se vuelva a ingresar al mismo if
                 sb.AppendLine("pos = pos + 1;");
                 sb.AppendLine("ValuateStr(readline, pos, estado);");
                 sb.AppendLine("}");
-               
+                
             }
            
             if (estado < totalTransiciones.Count )
@@ -241,28 +241,69 @@ namespace Lexical_Analyzer
                 {
                     if (esFinal[estado.ToString()] == true && transiciones[estado].Count == 0)
                     {
-                        sb.AppendLine("bool error = Retroceso(lexema_anterior, estado);");
-                        sb.AppendLine("if(error)");
+                        sb.AppendLine("error = Retroceso(estado);");
+                        sb.AppendLine("if(!error)");
                         sb.AppendLine("{");
-                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + NoError);");
+                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(\"ERROR\").ToString());");
+                        sb.AppendLine("Console.ReadLine();");
+                        sb.AppendLine("int originalLength = readline.Length;");
+                        sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+                        sb.AppendLine("if (pos < originalLength)");
+                        sb.AppendLine("{");
+                        sb.AppendLine("word_chunk = \"\";");
+                        sb.AppendLine("ValuateStr(readline, 0, 0);");
+                        sb.AppendLine("return;");
+
+                        sb.AppendLine("}");
                         sb.AppendLine("}");
                         sb.AppendLine("else");
                         sb.AppendLine("{");
-                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + NoToken); ");
+                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(word_chunk).ToString()); ");
+                        sb.AppendLine("Console.ReadLine();");
+                        sb.AppendLine("int originalLength = readline.Length;");
+                        sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+                        sb.AppendLine("if (pos < originalLength)");
+                        sb.AppendLine("{");
+                        sb.AppendLine("word_chunk = \"\";");
+                        sb.AppendLine("ValuateStr(readline, 0, 0);");
+                        sb.AppendLine("return;");
+
+                        sb.AppendLine("}");
                         sb.AppendLine("}");
                     }
                     else
                     {
                         sb.AppendLine("else");
                         sb.AppendLine("{");
-                        sb.AppendLine("bool error = Retroceso(lexema_anterior, estado);");
-                        sb.AppendLine("if(error)");
+                        sb.AppendLine("error = Retroceso(estado);");
+                        sb.AppendLine("if(!error)");
                         sb.AppendLine("{");
-                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + NoError);");
+                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(\"ERROR\").ToString());");
+                        sb.AppendLine("Console.ReadLine();");
+                        sb.AppendLine("int originalLength = readline.Length;");
+                        sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+                        sb.AppendLine("if (pos < originalLength)");
+                        sb.AppendLine("{");
+                        sb.AppendLine("word_chunk = \"\";");
+                        sb.AppendLine("ValuateStr(readline, 0, 0);");
+                        sb.AppendLine("return;");
+
+                        sb.AppendLine("}");
+
                         sb.AppendLine("}");
                         sb.AppendLine("else");
                         sb.AppendLine("{");
-                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + NoToken); ");
+                        sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(word_chunk).ToString());");
+                        sb.AppendLine("Console.ReadLine();");
+                        sb.AppendLine("int originalLength = readline.Length;");
+                        sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+                        sb.AppendLine("if (pos < originalLength)");
+                        sb.AppendLine("{");
+                        sb.AppendLine("word_chunk = \"\";");
+                        sb.AppendLine("ValuateStr(readline, 0, 0);");
+                        sb.AppendLine("return;");
+                        sb.AppendLine("}");
+
                         sb.AppendLine("}");
                         sb.AppendLine("}");
                     }
@@ -280,6 +321,12 @@ namespace Lexical_Analyzer
                 estado = estado + 1;
                 GenerateCode(AFD, estado);
             }
+            /*
+            if (estado + 1 == totalTransiciones.Count)
+            {
+                sb.AppendLine("break;");
+            }
+            */
             else
             {
                 //sb.AppendLine("break;");
@@ -299,46 +346,104 @@ namespace Lexical_Analyzer
 
             sb.AppendLine();
 
-            sb.AppendLine("namespace Scanner");
+            sb.AppendLine("namespace Lexical_Analyzer");
             sb.AppendLine("{");
             sb.AppendLine("class Program");
             sb.AppendLine("{");
 
             sb.AppendLine("public static char lexema_anterior = default(char);");
-            sb.AppendLine("public static char Lexema = default(char;)");
+            sb.AppendLine("public static char Lexema = default(char);");
             sb.AppendLine("public static int pos = 0;");
             sb.AppendLine("public static string word_chunk = \"\";");
+            sb.AppendLine("public static bool error = false;");
             sb.AppendLine();
             sb.AppendLine("static void Main(string[] args)");
             sb.AppendLine("{");
-            sb.AppendLine("StreamReader sr = new StreamReader(@\"C:\\Users\\Bryan\\Desktop\\Scanner.cs\");");
+            sb.AppendLine("StreamReader sr = new StreamReader(@\"C:\\Users\\Bryan\\Desktop\\Scanner.txt\");");
             sb.AppendLine("while(!sr.EndOfStream)");
             sb.AppendLine("{");
-            sb.AppendLine("string readline = sr.ReadLine();");
+            sb.AppendLine("string readline = sr.ReadLine().Trim();");
             sb.AppendLine("ValuateStr(readline, 0, 0);");
             sb.AppendLine("}");
             sb.AppendLine("}");
             sb.AppendLine();
 
-            sb.AppendLine("public static int ValuateStr(string readline, int pos, int estado)");
+            sb.AppendLine("public static void ValuateStr(string readline, int pos, int estado)");
             sb.AppendLine("{");
+            sb.AppendLine("if( pos == readline.Length)");
+            sb.AppendLine("{");
+            sb.AppendLine("error = Retroceso(estado);");
+            sb.AppendLine("if(!error)");
+            sb.AppendLine("{");
+            sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(\"ERROR\").ToString());");
+            sb.AppendLine("Console.ReadLine();");
+            sb.AppendLine("int originalLength = readline.Length;");
+            sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+            sb.AppendLine("if (pos < originalLength)");
+            sb.AppendLine("{");
+            sb.AppendLine("word_chunk = \"\";");
+            sb.AppendLine("ValuateStr(readline, 0, 0);");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            sb.AppendLine("else");
+            sb.AppendLine("{");
+            sb.AppendLine("Console.WriteLine(word_chunk + \":\" + VerificarActions(word_chunk).ToString()); ");
+            sb.AppendLine("Console.ReadLine();");
+            sb.AppendLine("int originalLength = readline.Length;");
+            sb.AppendLine("readline = readline.Substring(word_chunk.Length, (readline.Length - word_chunk.Length));");
+            sb.AppendLine("if (pos < originalLength)");
+            sb.AppendLine("{");
+            sb.AppendLine("word_chunk = \"\";");
+            sb.AppendLine("ValuateStr(readline, 0, 0);");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            sb.AppendLine("return;");
+            sb.AppendLine("}");
+            sb.AppendLine("Lexema = readline[pos];");
+            sb.AppendLine();
             sb.AppendLine(" switch( " + "estado" + " )");
             sb.AppendLine(" {");
 
             GenerateCode(automata, 0);
 
+            sb.AppendLine("break;");
             sb.AppendLine(" }");
             sb.AppendLine("}");
-            sb.AppendLine("}");
+            //sb.AppendLine("}");
             //sb.AppendLine("}");
             
-            sb.AppendLine("private bool Retroceso(int estado)");
+            sb.AppendLine("private static bool Retroceso(int estado)");
             sb.AppendLine("{");
             sb.AppendLine(EscribirRetroceso());
             sb.AppendLine("}");
+            sb.AppendLine("private static int VerificarActions(string estado)");
+            sb.AppendLine("{");
+            VerificarActions();
             sb.AppendLine("}");
-            //sb.AppendLine("}");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
             return sb.ToString();
+        }
+
+        private void RetreiveTokens()
+        {
+            
+        }
+
+        private void VerificarActions()
+        {
+            sb.AppendLine("switch(estado)");
+            sb.AppendLine("{");
+
+            for (int i = 0; i < FileLecture.ACTIONS.Count; i++)
+            {
+                sb.AppendLine("case" + "\"" + FileLecture.ACTIONS.ElementAt(i).Value +"\"" + ":");
+                sb.AppendLine("return " + FileLecture.ACTIONS.ElementAt(i).Key.ToString() + ";");
+            }
+
+            sb.AppendLine("default: ");
+            sb.AppendLine("return -1;");
+            sb.AppendLine("}");
         }
 
         private string EscribirRetroceso()
@@ -352,7 +457,8 @@ namespace Lexical_Analyzer
                 data += "case " + i.ToString() + ":\r\n";
                 data += "return " + esFinal.ElementAt(i).Value.ToString().ToLower() +";" + "\r\n";
             }
-
+            data += "default:\r\n";
+            data += "return false; \r\n";
             data += "}";
             return data;
         }
