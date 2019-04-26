@@ -231,6 +231,7 @@ namespace Lexical_Analyzer
                 //en retroceso, hacer un lexema-- y validar que no se vuelva a ingresar al mismo if
                 sb.AppendLine("pos = pos + 1;");
                 sb.AppendLine("ValuateStr(readline, pos, estado);");
+                sb.AppendLine("return;");
                 sb.AppendLine("}");
                 
             }
@@ -364,6 +365,7 @@ namespace Lexical_Analyzer
             sb.AppendLine("{");
             sb.AppendLine("string readline = sr.ReadLine().Trim();");
             sb.AppendLine("ValuateStr(readline, 0, 0);");
+            sb.AppendLine("word_chunk = \"\";");
             sb.AppendLine("}");
             sb.AppendLine("}");
             sb.AppendLine();
